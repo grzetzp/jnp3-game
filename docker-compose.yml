@@ -11,12 +11,14 @@ services:
       - mongodb
     depends_on:
       - mongodb
+    env_file:
+      - .env
 
   mongodb:
     image: mongo:latest
     hostname: test_mongodb
     env_file:
-      .env
+      - .env
     environment:
       - MONGO_INITDB_DATABASE=test_db
       # - MONGO_INITDB_ROOT_USERNAME=admin
@@ -37,3 +39,5 @@ services:
       - mongodb
     depends_on:
       - mongodb
+    env_file:
+      - .env

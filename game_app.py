@@ -3,31 +3,49 @@ from flask import Flask, jsonify, render_template, request, session, redirect
 from flask_pymongo import PyMongo
 from flask_socketio import SocketIO, emit
 from game import attack, attack_success
+from config import APP_SECRET_KEY, MONGO_URI
 
 
-MONGO_URI = 'mongodb://test_mongodb:27017/test_mongodb'
+# MONGO_URI = 'mongodb://test_mongodb:27017/test_mongodb'
 # MONGO_HOSTNAME = os.environ[]
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = os.urandom(32)
+app.config['SECRET_KEY'] = APP_SECRET_KEY
 app.config['MONGO_URI'] = MONGO_URI
 
 mongo = PyMongo(app)
 socketio = SocketIO(app, manage_session=False)
 
-userID = 'playername'
+userID = 'username'
 
 
 @app.route('/', methods=['POST', 'GET'])
 def index():
-    if request.method == 'POST' and 'username' in request.form:
-        username = request.form['username']
-        return render_template('game.html', username=username)
+    if request.cookies.get('username'):
+        username = request.cookies.get('username')
+        session[userID] = username
+        print(username)
+        return render_template('game.html', username=session[userID])
 
-    # if userID in session:
-    #     return render_template('game.html', username=session[userID])
-    # return render_template('game.html', username=username)
-    return render_template('game.html', username=request.args.get('username'))
+    return redirect('http://localhost:5000/')
+    # if request.method == 'POST' and 'username' in request.form:
+    #     username = request.form['username']
+    #     return render_template('game.html', username=username)
+
+    # return redirect('http://localhost:5000/')
+
+    # # if userID in session:
+    # #     return render_template('game.html', username=session[userID])
+    # # return render_template('game.html', username=username)
+    # return render_template('game.html', username=request.args.get('username'))
+
+@app.route('/back')
+def go_back():
+    resp = redirect('http://localhost:5000/')
+    resp.set_cookie(userID, session[userID])
+
+    return resp
+
 
 
 @app.route('/game/leave')
@@ -36,7 +54,7 @@ def leave_game():
         print(session[userID] + " leaving")
         # session.pop(userID)
         session.clear()
-    return redirect('http://localhost:5000/', code=307)
+    return redirect('http://localhost:5000/logout')
     # return render_template('index.html')
 
 

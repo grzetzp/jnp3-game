@@ -3,24 +3,24 @@ from flask import Flask, jsonify, render_template, request, session, redirect, u
 from flask_pymongo import PyMongo
 from flask_socketio import SocketIO, emit
 from game import attack, attack_success
+from config import APP_SECRET_KEY, MONGO_URI
 
-
-MONGO_URI = 'mongodb://test_mongodb:27017/test_mongodb'
+# MONGO_URI = 'mongodb://test_mongodb:27017/test_mongodb'
 # MONGO_HOSTNAME = os.environ[]
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = os.urandom(32)
+app.config['SECRET_KEY'] = APP_SECRET_KEY
 app.config['MONGO_URI'] = MONGO_URI
 
 mongo = PyMongo(app)
 # socketio = SocketIO(app, manage_session=False)
 
-userID = 'playername'
+userID = 'username'
 players = ["p1", "p2"]
 
 @app.route('/ping')
 def ping_server():
-    return "Server response.\n"
+    return "Server response." + str(app.config['SECRET_KEY']) + " " + app.config['MONGO_URI'] + "\n"
 
 
 @app.route('/get_one')
@@ -47,12 +47,24 @@ def put_one(id: int):
 def index():
     if userID in session:
         return render_template('index.html', username=session[userID])
+
+    if request.cookies.get('username'):
+        username = request.cookies.get('username')
+        session[userID] = username
+        return render_template('index.html', username=session[userID])
+
     return render_template('index.html')
 
 
 @app.route('/redirect')
 def do_redirect():
     return redirect('http://localhost:5001?username=testowy')
+
+
+@app.route('/logout', methods=['POST', 'GET'])
+def logout():
+    session.clear()
+    return render_template('index.html')
 
 
 @app.route('/game', methods=['POST', 'GET'])
@@ -68,8 +80,9 @@ def play_game():
             print(username + " joined")
     if userID in session:
         players.append(session[userID])
-        # return render_template('game.html', username=session[userID], players=players)
-        return redirect('http://localhost:5001/', code=307)
+        resp = redirect('http://localhost:5001/', code=307)
+        resp.set_cookie(userID, session[userID])
+        return resp
 
     return render_template('index.html')
 
