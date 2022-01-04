@@ -1,0 +1,29 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+    <h1>Title</h1>
+
+    <h2>Send:</h2>
+    <form id="emit" method="post" action="#">
+        <label for="emit_data"></label><input type="text" name="emit_data" id="emit_data" placeholder="Message to emit">
+        <input type="submit" value="Echo">
+    </form>
+
+    <h2>Receive:</h2>
+    <div id="log"></div>
+
+    {% if username is defined %}
+        <h3>Hello {{ username }}</h3>
+        <form action="/game" method="post" id="join_game">
+            <input type="submit" value="Start game!">
+        </form>
+    {% else %}
+        <h3>Enter username and play</h3>
+        <form action="/game" method="post" id="join_game">
+            <label for="username"></label><input type="text" name="username" id="username" placeholder="Username" value="{{ request.form['username'] }}">
+            <input type="submit" value="Start game!">
+        </form>
+    {% endif %}
+
+    <script src="{{url_for('static', filename='index.js')}}"></script>
+{% endblock %}
