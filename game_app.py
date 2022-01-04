@@ -1,5 +1,5 @@
 import os
-from flask import Flask, jsonify, render_template, request, session
+from flask import Flask, jsonify, render_template, request, session, redirect
 from flask_pymongo import PyMongo
 from flask_socketio import SocketIO, emit
 from game import attack, attack_success
@@ -20,9 +20,79 @@ userID = 'playername'
 
 @app.route('/', methods=['POST', 'GET'])
 def index():
+    if request.method == 'POST' and 'username' in request.form:
+        username = request.form['username']
+        return render_template('game.html', username=username)
+
+    # if userID in session:
+    #     return render_template('game.html', username=session[userID])
+    # return render_template('game.html', username=username)
+    return render_template('game.html', username=request.args.get('username'))
+
+
+@app.route('/game/leave')
+def leave_game():
     if userID in session:
-        return render_template('game_test.html', username=session[userID])
-    return render_template('game_test.html')
+        print(session[userID] + " leaving")
+        # session.pop(userID)
+        session.clear()
+    return redirect('http://localhost:5000/', code=307)
+    # return render_template('index.html')
+
+
+# @socketio.on('leave')
+# def on_leave():
+#     if userID in session:
+        # session.pop(userID)
+        # session.clear()
+
+
+@socketio.on('join_game')
+def on_join(data):
+    playername = data['data']
+
+    print(playername + " joining")
+
+    if userID in session:
+        print("Player " + session[userID] + " already logged.")
+    else:
+        session[userID] = playername
+        print("Player " + playername + " joined")
+
+    print(request.sid)
+    # players[request.sid] = playername
+
+
+@socketio.on('attack')
+def on_attack():
+    print("Attack")
+    print(request.sid)
+    if userID in session:
+        print(session[userID] + " attacked")
+    emit('attack_response', {'data': attack_success(attack())})
+
+
+@socketio.on('my_event')
+def on_my_event(msg):
+    print('my_event:\n' + msg['data'])
+    emit('my_response', {'data': msg['data']})
+
+
+@socketio.on('connect')
+def on_connect():
+    print('connect')
+    if userID in session:
+        print(session[userID] + " connected")
+    emit('my_response', {'data': 'Connected'})
+
+
+@socketio.on('disconnect')
+def on_disconnect():
+    print("client sid {} disconnected".format(request.sid))
+
+    if userID in session:
+        print("client session {} disconnected".format(session[userID]))
+    # print("client {} disconnected".format(players[request.sid]))
 
 
 if __name__ == '__main__':
