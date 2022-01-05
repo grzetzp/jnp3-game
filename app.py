@@ -1,21 +1,18 @@
 import os
-from flask import Flask, jsonify, render_template, request, session, redirect, url_for
+from flask import Flask, jsonify, render_template, request, session, redirect, url_for, flash
 from flask_pymongo import PyMongo
 from flask_socketio import SocketIO, emit
 from game import attack, attack_success
 from config import APP_SECRET_KEY, MONGO_URI
-
-# MONGO_URI = 'mongodb://test_mongodb:27017/test_mongodb'
-# MONGO_HOSTNAME = os.environ[]
+from login import LoginForm, RegisterForm, login_valid, log_out
+from bson.json_util import dumps
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = APP_SECRET_KEY
 app.config['MONGO_URI'] = MONGO_URI
 
 mongo = PyMongo(app)
-# socketio = SocketIO(app, manage_session=False)
 
-userID = 'username'
 players = ["p1", "p2"]
 
 @app.route('/ping')
@@ -29,29 +26,83 @@ def get_one():
 
     return jsonify({"one": not not one})
 
+@app.route('/get_all')
+def get_all():
+    all = mongo.db.test_tb.find()
+    all_list = list(all)
+    json_data = dumps(all_list)
 
-@app.route('/api/put_one/<id>')
+    return json_data
+
+
+@app.route('/put_one/<id>')
 def put_one(id: int):
     mongo.db.test_tb.insert_one({
-            "id": int(id),
-            "name": "testowy_" + id
+            "username": "testowy_" + id,
+            "password": "testowe",
             })
 
     return "One put"
 
-# @app.route('/')
-# def home_page():
 
-#     return "Success. Welcome."
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    form = LoginForm()
+    if form.validate_on_submit():
+        flash("Login requested for user {}".format(form.username.data))
+        username = form.username.data
+        password = form.password.data
+        user = mongo.db.test_tb.find_one({'username': form.username.data})
+
+        # TODO hashed password etc.
+        if user is not None and login_valid(username, password, user):
+            flash("User {} logged in.".format(form.username.data))
+
+            session['username'] = username  # TODO jwt token
+            return redirect(url_for('index', username=username))
+        else:
+            flash("Wrong username or password or smth")
+            return redirect(url_for('login'))
+
+    return render_template('login.html', form=form)
+
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    form = RegisterForm()
+    if request.method == 'POST' and form.validate_on_submit():
+        flash("Register requested for user {}".format(form.username.data))
+
+        username = form.username.data
+        password = form.password.data
+        user = mongo.db.test_tb.find_one({'username': form.username.data})
+
+        # TODO hashed password etc.
+        if user is not None:
+            flash("Username {} already exists. Pick different one".format(form.username.data))
+            return redirect(url_for('register'))
+        else:
+            flash("Registered.")
+            mongo.db.test_tb.insert_one({
+                "username": username,
+                "password": password,
+            })
+            session['username'] = username
+            return redirect(url_for('index', username=username))
+    return render_template('register.html', form=form)
+
+
 @app.route('/', methods=['POST', 'GET'])
 def index():
-    if userID in session:
-        return render_template('index.html', username=session[userID])
+    if 'username' in session:
+        flash("from session")
+        return render_template('index.html', username=session['username'])
 
     if request.cookies.get('username'):
+        flash("from cookies")
         username = request.cookies.get('username')
-        session[userID] = username
-        return render_template('index.html', username=session[userID])
+        session['username'] = username
+        return render_template('index.html', username=session['username'])
 
     return render_template('index.html')
 
@@ -63,28 +114,20 @@ def do_redirect():
 
 @app.route('/logout', methods=['POST', 'GET'])
 def logout():
-    session.clear()
-    return render_template('index.html')
+    resp = redirect(url_for('index'))
+    log_out(resp, session)
+    return resp
 
 
 @app.route('/game', methods=['POST', 'GET'])
 def play_game():
-    print("game")
-    if request.method == 'POST' and 'username' in request.form:
-        if userID in session:
-            print("player " + session[userID] + " already logged")
-        else:
-            username = request.form['username']
-            session[userID] = username
-            print("player " + session[userID] + " joined")
-            print(username + " joined")
-    if userID in session:
-        players.append(session[userID])
+    if 'username' in session:
+        players.append(session['username'])
         resp = redirect('http://localhost:5001/', code=307)
-        resp.set_cookie(userID, session[userID])
+        resp.set_cookie('username', session['username'])
         return resp
 
-    return render_template('index.html')
+    return redirect(url_for('index'))
 
 
 @app.route('/users')
@@ -94,7 +137,7 @@ def get_users():
     if not users_raw:
         return "Database error"
 
-    users = [{"id": user['id'], "name": user['name']} for user in users_raw]
+    users = [{"id": user['id'], "username": user['username']} for user in users_raw]
     return jsonify({"all_users": users})
 
 if __name__ == '__main__':
