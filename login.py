@@ -1,6 +1,8 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField
 from wtforms.validators import DataRequired, EqualTo
+import bcrypt
+from config import DEC_FORMAT
 
 class LoginForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
@@ -22,7 +24,7 @@ class User():
 
 
 def login_valid(username, password, user_db):
-    return username == user_db['username'] and password == user_db['password']
+    return username == user_db['username'] and bcrypt.checkpw(password.encode(DEC_FORMAT), user_db['password'])
 
 def log_out(resp, session):
     resp.set_cookie('username', '', expires=0)

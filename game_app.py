@@ -3,8 +3,9 @@ from flask import Flask, jsonify, render_template, request, session, redirect
 from flask_pymongo import PyMongo
 from flask_socketio import SocketIO, emit
 from game import attack, attack_success
-from config import APP_SECRET_KEY, MONGO_URI
+from config import APP_SECRET_KEY, MONGO_URI, ENC_ALGO, DEC_FORMAT
 from login import log_out
+import jwt
 
 # MONGO_URI = 'mongodb://test_mongodb:27017/test_mongodb'
 # MONGO_HOSTNAME = os.environ[]
@@ -19,10 +20,14 @@ socketio = SocketIO(app, manage_session=False)
 
 @app.route('/', methods=['POST', 'GET'])
 def index():
-    if request.cookies.get('username'):
-        username = request.cookies.get('username')
+    print("key: " + APP_SECRET_KEY)
+    
+    if request.cookies.get('token'):
+        token = request.cookies.get('token')
+        payload = jwt.decode(token, APP_SECRET_KEY, ENC_ALGO)
+        username = payload['username']
         session['username'] = username
-        print(username)
+        print("payload: {}".format(payload))
         return render_template('game.html', username=session['username'])
 
     return redirect('http://localhost:5000/')

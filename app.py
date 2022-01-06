@@ -3,9 +3,13 @@ from flask import Flask, jsonify, render_template, request, session, redirect, u
 from flask_pymongo import PyMongo
 from flask_socketio import SocketIO, emit
 from game import attack, attack_success
-from config import APP_SECRET_KEY, MONGO_URI
+from config import APP_SECRET_KEY, MONGO_URI, ENC_ALGO, DEC_FORMAT
 from login import LoginForm, RegisterForm, login_valid, log_out
 from bson.json_util import dumps
+import jwt
+import bcrypt
+import random
+import string
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = APP_SECRET_KEY
@@ -13,7 +17,8 @@ app.config['MONGO_URI'] = MONGO_URI
 
 mongo = PyMongo(app)
 
-players = ["p1", "p2"]
+PLAYERS = ["p1", "p2"]
+
 
 @app.route('/ping')
 def ping_server():
@@ -35,14 +40,19 @@ def get_all():
     return json_data
 
 
-@app.route('/put_one/<id>')
-def put_one(id: int):
+@app.route('/put_one')
+def put_one():
     mongo.db.test_tb.insert_one({
-            "username": "testowy_" + id,
-            "password": "testowe",
+            "username": "testowy_" + random.choice(string.ascii_letters),
+            "password": bcrypt.hashpw("testowe".encode(DEC_FORMAT), bcrypt.gensalt()),
             })
 
-    return "One put"
+    return redirect(url_for('get_all'))
+
+@app.route('/drop_all')
+def drop():
+    mongo.db.test_tb.drop()
+    return redirect(url_for('get_all'))
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -85,7 +95,7 @@ def register():
             flash("Registered.")
             mongo.db.test_tb.insert_one({
                 "username": username,
-                "password": password,
+                "password": bcrypt.hashpw(password.encode(DEC_FORMAT), bcrypt.gensalt()),
             })
             session['username'] = username
             return redirect(url_for('index', username=username))
@@ -122,9 +132,17 @@ def logout():
 @app.route('/game', methods=['POST', 'GET'])
 def play_game():
     if 'username' in session:
-        players.append(session['username'])
+        PLAYERS.append(session['username'])
         resp = redirect('http://localhost:5001/', code=307)
-        resp.set_cookie('username', session['username'])
+
+        print("key: " + APP_SECRET_KEY)
+        token = jwt.encode({
+            'username': session['username'],
+            'room': 0,
+            }, APP_SECRET_KEY)
+
+        resp.set_cookie('token', token)
+
         return resp
 
     return redirect(url_for('index'))

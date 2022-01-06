@@ -8,3 +8,5 @@ pymongo==4.0.1
 Werkzeug==2.0.2
 flask_socketio
 flask_wtf
+pyjwt
+bcrypt
