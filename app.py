@@ -18,6 +18,7 @@ mongo = PyMongo(app)
 userID = 'username'
 players = ["p1", "p2"]
 
+
 @app.route('/ping')
 def ping_server():
     return "Server response." + str(app.config['SECRET_KEY']) + " " + app.config['MONGO_URI'] + "\n"
@@ -33,11 +34,12 @@ def get_one():
 @app.route('/api/put_one/<id>')
 def put_one(id: int):
     mongo.db.test_tb.insert_one({
-            "id": int(id),
-            "name": "testowy_" + id
-            })
+        "id": int(id),
+        "name": "testowy_" + id
+    })
 
     return "One put"
+
 
 # @app.route('/')
 # def home_page():
@@ -80,7 +82,7 @@ def play_game():
             print(username + " joined")
     if userID in session:
         players.append(session[userID])
-        resp = redirect('http://localhost:5001/', code=307)
+        resp = redirect('http://localhost:5002/', code=307)
         resp.set_cookie(userID, session[userID])
         return resp
 
@@ -97,7 +99,6 @@ def get_users():
     users = [{"id": user['id'], "name": user['name']} for user in users_raw]
     return jsonify({"all_users": users})
 
+
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=5000)
-    # socketio.run(app, host="0.0.0.0", port=5000)
-    # app.run()

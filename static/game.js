@@ -3,8 +3,7 @@ var log = document.getElementById('log')
 var emitForm = document.getElementById('attack')
 var leaveForm = document.getElementById('leave')
 var emitData = new FormData(emitForm)
-// var emitData = new FormData(document.getElementById('emit_data'))
-//
+
 emitForm.addEventListener('submit', emitAction)
 
 function emitAction(event) {
@@ -13,13 +12,6 @@ function emitAction(event) {
     socket.emit('attack')
     return false
 }
-
-// leaveForm.addEventListener('submit', leaveAction)
-
-// function leaveAction(event) {
-//     socket.emit('leave')
-//     return false
-// }
 
 socket.on('attack_response', function (msg, callback) {
     // log.textContent += msg.count

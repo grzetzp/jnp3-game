@@ -28,16 +28,6 @@ def index():
         return render_template('game.html', username=session[userID])
 
     return redirect('http://localhost:5000/')
-    # if request.method == 'POST' and 'username' in request.form:
-    #     username = request.form['username']
-    #     return render_template('game.html', username=username)
-
-    # return redirect('http://localhost:5000/')
-
-    # # if userID in session:
-    # #     return render_template('game.html', username=session[userID])
-    # # return render_template('game.html', username=username)
-    # return render_template('game.html', username=request.args.get('username'))
 
 @app.route('/back')
 def go_back():
@@ -52,10 +42,8 @@ def go_back():
 def leave_game():
     if userID in session:
         print(session[userID] + " leaving")
-        # session.pop(userID)
         session.clear()
     return redirect('http://localhost:5000/logout')
-    # return render_template('index.html')
 
 
 # @socketio.on('leave')
