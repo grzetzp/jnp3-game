@@ -39,5 +39,11 @@ function getRandomHash() {
 socket.on('connect', function () {
     console.log("I\'m connected! room nr", room);
     document.getElementById("roomID").innerHTML = room;
+
     socket.emit('join', {'room': room});
+})
+
+socket.on('found', function (data) {
+    console.log("found");
+    window.location = data['url'];
 })

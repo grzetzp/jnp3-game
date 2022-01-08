@@ -30,7 +30,7 @@ def index():
         global my_rating
         #my_rating = mongo.db.rating.find_one({'username': username})['rating']
 
-        return render_template('wait_room.html', username=session[userID])
+        return render_template('wait_room.html', username=session[userID], room_log='')
 
     return redirect('http://localhost:5000/')
 
@@ -51,7 +51,12 @@ def on_join(data):
         "player": username
     })
 
-    send(username + ' has entered the room.', to=my_room)
+    emit(username + ' has entered the room.', to=my_room)
+
+
+@socketio.on('found')
+def on_join(data):
+    return render_template('game.html', username=session[userID], players=[session[userID], data['player']], room_id=my_room)
 
 
 @socketio.on('leave')
@@ -62,7 +67,7 @@ def on_leave(data):
     leave_room(room)
     mongo.db.rooms.deleteOne({"id": room})
 
-    send(username + ' has left the room.', to=room)
+    emit(username + ' has left the room.', to=room)
 
     if userID in session:
         print(session[userID] + " leaving")
@@ -73,23 +78,29 @@ def on_leave(data):
 @socketio.on('check_now')
 def on_leave(data):
     rooms_raw = mongo.db.rooms.find()
-    range = data['range']
+    search_radius = data['range']
+
     for rooms in rooms_raw:
-        id = rooms['id']
+        rid = rooms['id']
         rating = rooms['rating']
         player = rooms['player']
 
-        if abs(rating - my_rating) <= range:
+        if player == session[userID]:
+            continue
+
+        print(rid, rating, player)
+
+        if abs(rating - my_rating) <= search_radius:
+            print("FOUND, WOAH!!!!")
             global my_room
-            mongo.db.rooms.deleteOne({"id": my_room})
-            my_room = id
+            mongo.db.rooms.delete_one({"id": my_room})
+            mongo.db.rooms.delete_one({"id": rid})
+            leave_room(my_room)
+            my_room = rid
             join_room(my_room)
-            send(session[userID] + ' has entered the room of player' + player, to=my_room)
+            emit("found", {'player': session[userID], 'url': "http://localhost:5001/"}, to=my_room)
 
-            return render_template('wait_room.html', username=session[userID], room_log=data['room_log'])
-
-
-
+            #return render_template('game.html', username=session[userID], players=[session[userID], player], room_id=my_room)
 
 
 @app.route('/room/leave')
