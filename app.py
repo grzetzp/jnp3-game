@@ -134,7 +134,6 @@ def play_game():
     if 'username' in session:
         PLAYERS.append(session['username'])
         resp = redirect('http://localhost:5002/', code=307)
-        resp.set_cookie(session['username'], session['username'])
 
         print("key: " + APP_SECRET_KEY)
         token = jwt.encode({
@@ -143,6 +142,11 @@ def play_game():
             }, APP_SECRET_KEY)
 
         resp.set_cookie('token', token)
+        resp.set_cookie('username', session['username'])
+
+        print("HUHUHUUH")
+
+        return resp
 
     return redirect(url_for('index'))
 
