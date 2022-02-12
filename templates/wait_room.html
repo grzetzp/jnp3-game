@@ -1,0 +1,22 @@
+
+{% extends 'layout.html' %}
+
+{% block content %}
+
+    <h1>Waiting room</h1>
+
+    <form id="leave" method="post" action="#">
+        <input type="submit" value="Abort waiting">
+    </form>
+
+    <h2>Waiting room log:</h2>
+    <div id="log" onload="getRoomID()">
+
+        {{ room_log }}
+        <p> Room has been created, its id is <span id="roomID"></span></p>
+        <p> Player {{ username }} has joined the waiting room. </p>
+
+    </div>
+
+    <script src="{{url_for('static', filename='wait_room.js')}}"></script>
+{% endblock %}

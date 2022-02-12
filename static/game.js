@@ -89,4 +89,3 @@ socket.on('connect', function () {
     console.log("I\'m connected!")
     socket.emit('my_event', {data: "I\'m connected!"})
 })
-

@@ -31,16 +31,6 @@ def index():
         return render_template('game.html', username=session['username'])
 
     return redirect('http://localhost:5000/')
-    # if request.method == 'POST' and 'username' in request.form:
-    #     username = request.form['username']
-    #     return render_template('game.html', username=username)
-
-    # return redirect('http://localhost:5000/')
-
-    # # if 'username' in session:
-    # #     return render_template('game.html', username=session['username'])
-    # # return render_template('game.html', username=username)
-    # return render_template('game.html', username=request.args.get('username'))
 
 @app.route('/back')
 def go_back():

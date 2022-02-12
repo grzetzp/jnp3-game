@@ -43,9 +43,9 @@ def get_all():
 @app.route('/put_one')
 def put_one():
     mongo.db.test_tb.insert_one({
-            "username": "testowy_" + random.choice(string.ascii_letters),
-            "password": bcrypt.hashpw("testowe".encode(DEC_FORMAT), bcrypt.gensalt()),
-            })
+        "username": "testowy_" + random.choice(string.ascii_letters),
+        "password": bcrypt.hashpw("testowe".encode(DEC_FORMAT), bcrypt.gensalt()),
+    })
 
     return redirect(url_for('get_all'))
 
@@ -133,7 +133,7 @@ def logout():
 def play_game():
     if 'username' in session:
         PLAYERS.append(session['username'])
-        resp = redirect('http://localhost:5001/', code=307)
+        resp = redirect('http://localhost:5002/', code=307)
 
         print("key: " + APP_SECRET_KEY)
         token = jwt.encode({
@@ -142,6 +142,9 @@ def play_game():
             }, APP_SECRET_KEY)
 
         resp.set_cookie('token', token)
+        resp.set_cookie('username', session['username'])
+
+        print("HUHUHUUH")
 
         return resp
 
@@ -158,7 +161,6 @@ def get_users():
     users = [{"id": user['id'], "username": user['username']} for user in users_raw]
     return jsonify({"all_users": users})
 
+
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=5000)
-    # socketio.run(app, host="0.0.0.0", port=5000)
-    # app.run()
