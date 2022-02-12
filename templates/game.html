@@ -17,8 +17,8 @@
         <input type="submit" value="Leave">
     </form>
 
-    <h2>Receive:</h2>
-    <div id="log"></div>
+    <h2>Attack response:</h2>
+    <div id="log_attack"></div>
 
     <table id="players" class="table table-striped">
         <thead>
@@ -32,6 +32,15 @@
             {% endfor %}
         </tbody>
     </table>
+
+    <h2>Send:</h2>
+    <form id="emit" method="post" action="#">
+        <label for="emit_data"></label><input type="text" name="emit_data" id="emit_data" placeholder="Message to emit">
+        <input type="submit" value="Echo">
+    </form>
+
+    <h2>Echo response:</h2>
+    <div id="log_echo"></div>
 
     <script src="{{url_for('static', filename='game.js')}}"></script>
 {% endblock %}
