@@ -3,9 +3,7 @@
 {% block content %}
     <h1>Game</h1>
 
-{#    <marquee behavior="slide" direction="left" id="timeout"></marquee>#}
-{#    <marquee>TEST</marquee>#}
-    <h1 id="timeout"></h1>
+    <marquee direction="left" id="timeout" direction="right"></marquee>
 
     <h1 id="time"></h1>
 
@@ -23,15 +21,11 @@
         <input type="submit" value="Back">
     </form>
 
-    <form id="leave" action="/game/leave">
-        <input type="submit" value="Leave">
-    </form>
-
     <h2>Attack success chance:</h2>
-    <div id="my_success"></div>
+    <div id="my_success">0.5</div>
 
     <h2>Enemy attack success chance:</h2>
-    <div id="op_success"></div>
+    <div id="op_success">0.5</div>
 
     <h2>Attack response:</h2>
     <div id="log_attack">"MY ATTACKS 0 OPPONENT ATTACKS 0</div>

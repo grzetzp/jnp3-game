@@ -47,16 +47,6 @@ def go_back():
     return resp
 
 
-@app.route('/game/leave')
-def leave_game():
-    resp = redirect('http://localhost:5000/logout')
-
-    if 'username' in session:
-        print(session['username'] + " leaving")
-        log_out(resp, session)
-    return resp
-
-
 @socketio.on('join_game')
 def on_join():
     join_room(my_room)
@@ -97,7 +87,6 @@ def on_attack():
     emit('train_response', {'data': attack_success_chance, 'player': session['username']}, to=my_room)
 
 
-
 @socketio.on('attack')
 def on_attack():
     print("Attack")
@@ -127,15 +116,6 @@ def on_disconnect():
 
     if 'username' in session:
         print("client session {} disconnected".format(session['username']))
-    # print("client {} disconnected".format(players[request.sid]))
-
-
-# @socketio.on('testtest')
-# def aaa():
-#     resp = redirect('http://localhost:5001/', code=307)
-#     resp.set_cookie('username', session['username'])
-#
-#     return resp
 
 
 if __name__ == '__main__':

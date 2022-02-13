@@ -19,6 +19,7 @@ var op_attck_scs = 0.5
 
 // var emitData = new FormData(document.getElementById('emit_data'))
 //
+var ranking_counted = false
 
 function startTimer(duration, display) {
     var timer = duration, minutes, seconds;
@@ -35,8 +36,10 @@ function startTimer(duration, display) {
             timer = 0;
         }
 
-        if (timer === 0) {
+        if (timer === 0 && ranking_counted === false) {
+            ranking_counted = true
             attackForm.style.display = 'none';
+            trainForm.style.display = 'none';
             if (my_attck_nr > op_attck_nr) {
                 timeout.textContent = "YOU WON! YOU WON! YOU WON! YOU WON! YOU WON! YOU WON! YOU WON! YOU WON! YOU WON!"
                 socket.emit('win')

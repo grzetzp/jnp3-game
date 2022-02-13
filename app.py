@@ -171,10 +171,8 @@ def get_users():
 
 @app.route('/ranking')
 def get_rating():
-    print("REQUEST")
     rating_raw = mongo.db.rating.find()
-    rating = [str(rtg['username']) + " " + str(rtg['rating']) for rtg in rating_raw]
-    print("PRINTING", rating)
+    rating = [{str(rtg['username']), str(rtg['rating'])} for rtg in rating_raw]
     return render_template('ranking.html', rating=rating)
 
 
