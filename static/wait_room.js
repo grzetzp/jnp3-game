@@ -9,7 +9,6 @@ var rating_range = 10;
 
 
 (function(){
-    console.log("HUHUHUHUHUHUHUHUHUH");
     log.innerHTML += "<p> Checking for games in rating range" + rating_range  + "</p>"
     socket.emit('check_now', {'range': rating_range, 'room_log': log.innerHTML});
     rating_range += 10;
@@ -43,7 +42,14 @@ socket.on('connect', function () {
     socket.emit('join', {'room': room});
 })
 
-socket.on('found', function (data) {
+socket.on('found', async function (data) {
     console.log("found");
-    window.location = data['url'];
+    // var prevcookie = document.cookie
+    // console.log(prevcookie);
+    // prevcookie = prevcookie + ";
+    // console.log(prevcookie);
+    document.cookie = "room=" + data['room'];
+    console.log(document.cookie);
+    window.location.replace("http://localhost:5001/");
+    window.location.href = "http://localhost:5001/";
 })

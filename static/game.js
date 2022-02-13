@@ -28,6 +28,11 @@ function emitAction(event) {
     // return false
 }
 
+(function(){
+    console.log("joining game");
+    socket.emit('join_game');
+})();
+
 // joinForm.addEventListener('submit', joinGame)
 
 // function joinGame(event) {
@@ -55,13 +60,6 @@ socket.on('connect', function () {
     socket.emit('my_event', {data: "I\'m connected!"})
 })
 
-
-// leaveForm.addEventListener('submit', leaveAction)
-
-// function leaveAction(event) {
-//     socket.emit('leave')
-//     return false
-// }
 
 socket.on('attack_response', function (msg, callback) {
     // logAttack.textContent += msg.count

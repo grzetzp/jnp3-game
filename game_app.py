@@ -1,7 +1,7 @@
 import os
 from flask import Flask, jsonify, render_template, request, session, redirect
 from flask_pymongo import PyMongo
-from flask_socketio import SocketIO, emit
+from flask_socketio import SocketIO, emit, join_room
 from game import attack, attack_success
 from config import APP_SECRET_KEY, MONGO_URI, ENC_ALGO, DEC_FORMAT
 from login import log_out
@@ -17,6 +17,8 @@ app.config['MONGO_URI'] = MONGO_URI
 mongo = PyMongo(app)
 socketio = SocketIO(app, manage_session=False)
 
+my_room = ""
+
 
 @app.route('/', methods=['POST', 'GET'])
 def index():
@@ -28,9 +30,13 @@ def index():
         username = payload['username']
         session['username'] = username
         print("payload: {}".format(payload))
-        return render_template('game.html', username=session['username'])
+        global my_room
+        my_room = request.cookies.get('room')
+
+        return render_template('game.html', username=session['username'], room=my_room)
 
     return redirect('http://localhost:5000/')
+
 
 @app.route('/back')
 def go_back():
@@ -39,7 +45,6 @@ def go_back():
         resp.set_cookie('username', session['username'])
 
     return resp
-
 
 
 @app.route('/game/leave')
@@ -52,42 +57,24 @@ def leave_game():
     return resp
 
 
-# @socketio.on('leave')
-# def on_leave():
-#     if 'username' in session:
-        # session.pop('username')
-        # session.clear()
-
-
 @socketio.on('join_game')
-def on_join(data):
-    playername = data['data']
-
-    print(playername + " joining")
-
-    if 'username' in session:
-        print("Player " + session['username'] + " already logged.")
-    else:
-        session['username'] = playername
-        print("Player " + playername + " joined")
-
-    print(request.sid)
-    # players[request.sid] = playername
+def on_join():
+    join_room(my_room)
 
 
 @socketio.on('attack')
 def on_attack():
     print("Attack")
-    print(request.sid)
+    print(my_room)
     if 'username' in session:
         print(session['username'] + " attacked")
-    emit('attack_response', {'data': attack_success(attack())})
+    emit('attack_response', {'data': attack_success(attack())}, to=my_room)
 
 
 @socketio.on('my_event')
 def on_my_event(msg):
     print('my_event:\n' + msg['data'])
-    emit('my_response', {'data': msg['data']})
+    emit('my_response', {'data': msg['data']}, to=my_room)
 
 
 @socketio.on('connect')
@@ -95,7 +82,7 @@ def on_connect():
     print('connect')
     if 'username' in session:
         print(session['username'] + " connected")
-    emit('my_response', {'data': 'Connected'})
+    emit('my_response', {'data': 'Connected'}, to=my_room)
 
 
 @socketio.on('disconnect')
@@ -105,6 +92,14 @@ def on_disconnect():
     if 'username' in session:
         print("client session {} disconnected".format(session['username']))
     # print("client {} disconnected".format(players[request.sid]))
+
+
+# @socketio.on('testtest')
+# def aaa():
+#     resp = redirect('http://localhost:5001/', code=307)
+#     resp.set_cookie('username', session['username'])
+#
+#     return resp
 
 
 if __name__ == '__main__':

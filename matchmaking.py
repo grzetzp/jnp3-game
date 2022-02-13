@@ -16,7 +16,6 @@ app.config['MONGO_URI'] = MONGO_URI
 mongo = PyMongo(app)
 socketio = SocketIO(app, manage_session=False)
 
-userID = 'username'
 my_room = ""
 my_rating = 500
 
@@ -25,12 +24,12 @@ my_rating = 500
 def index():
     if request.cookies.get('username'):
         username = request.cookies.get('username')
-        session[userID] = username
+        session['username'] = username
         print(username)
         global my_rating
         #my_rating = mongo.db.rating.find_one({'username': username})['rating']
 
-        return render_template('wait_room.html', username=session[userID], room_log='')
+        return render_template('wait_room.html', username=session['username'], room_log='')
 
     return redirect('http://localhost:5000/')
 
@@ -38,8 +37,7 @@ def index():
 
 @socketio.on('join')
 def on_join(data):
-    print("XDXDXDXDXDDDXXD")
-    username = session[userID]
+    username = session['username']
     global my_room
     my_room = data['room']
     print("PLAYER", username, "JOINED ROOM", my_room)
@@ -56,12 +54,12 @@ def on_join(data):
 
 @socketio.on('found')
 def on_join(data):
-    return render_template('game.html', username=session[userID], players=[session[userID], data['player']], room_id=my_room)
+    return render_template('game.html', username=session['username'], players=[session['username'], data['player']], room_id=my_room)
 
 
 @socketio.on('leave')
 def on_leave(data):
-    username = session[userID]
+    username = session['username']
     room = data['room']
     print("PLAYER", username, "LEFT ROOM", room)
     leave_room(room)
@@ -69,8 +67,8 @@ def on_leave(data):
 
     emit(username + ' has left the room.', to=room)
 
-    if userID in session:
-        print(session[userID] + " leaving")
+    if 'username' in session:
+        print(session['username'] + " leaving")
         session.clear()
     return redirect('http://localhost:5000/logout')
 
@@ -85,7 +83,7 @@ def on_leave(data):
         rating = rooms['rating']
         player = rooms['player']
 
-        if player == session[userID]:
+        if player == session['username']:
             continue
 
         print(rid, rating, player)
@@ -98,15 +96,13 @@ def on_leave(data):
             leave_room(my_room)
             my_room = rid
             join_room(my_room)
-            emit("found", {'player': session[userID], 'url': "http://localhost:5001/"}, to=my_room)
-
-            #return render_template('game.html', username=session[userID], players=[session[userID], player], room_id=my_room)
+            emit("found", {'player1': session['username'], 'player2': player, 'room': my_room}, to=my_room)
 
 
 @app.route('/room/leave')
 def leave_game():
-    if userID in session:
-        print(session[userID] + " leaving")
+    if 'username' in session:
+        print(session['username'] + " leaving")
         session.clear()
     return redirect('http://localhost:5000/logout')
 

@@ -144,8 +144,6 @@ def play_game():
         resp.set_cookie('token', token)
         resp.set_cookie('username', session['username'])
 
-        print("HUHUHUUH")
-
         return resp
 
     return redirect(url_for('index'))
