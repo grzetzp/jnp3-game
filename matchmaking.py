@@ -3,7 +3,7 @@ from flask import Flask, jsonify, render_template, request, session, redirect
 from flask_pymongo import PyMongo
 from flask_socketio import SocketIO, emit, send
 from flask_socketio import join_room, leave_room
-from game import attack, attack_success
+from game import attack_success
 from config import APP_SECRET_KEY, MONGO_URI
 
 # MONGO_URI = 'mongodb://test_mongodb:27017/test_mongodb'

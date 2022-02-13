@@ -2,7 +2,7 @@ import os
 from flask import Flask, jsonify, render_template, request, session, redirect, url_for, flash
 from flask_pymongo import PyMongo
 from flask_socketio import SocketIO, emit
-from game import attack, attack_success
+from game import attack_success
 from config import APP_SECRET_KEY, MONGO_URI, ENC_ALGO, DEC_FORMAT
 from login import LoginForm, RegisterForm, login_valid, log_out
 from bson.json_util import dumps

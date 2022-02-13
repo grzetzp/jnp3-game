@@ -3,10 +3,20 @@
 {% block content %}
     <h1>Game</h1>
 
+{#    <marquee behavior="slide" direction="left" id="timeout"></marquee>#}
+{#    <marquee>TEST</marquee>#}
+    <h1 id="timeout"></h1>
+
+    <h1 id="time"></h1>
+
     <h2>Player: {{ username }}</h2>
     <form id="attack" method="post" action="#">
 {#        <label for="emit_data"></label><input type="text" name="emit_data" id="emit_data" placeholder="Message to emit">#}
         <input type="submit" value="Attack">
+    </form>
+    <form id="train" method="post" action="#">
+{#        <label for="emit_data"></label><input type="text" name="emit_data" id="emit_data" placeholder="Message to emit">#}
+        <input type="submit" value="Train">
     </form>
 
     <form action="/back">
@@ -17,8 +27,14 @@
         <input type="submit" value="Leave">
     </form>
 
+    <h2>Attack success chance:</h2>
+    <div id="my_success"></div>
+
+    <h2>Enemy attack success chance:</h2>
+    <div id="op_success"></div>
+
     <h2>Attack response:</h2>
-    <div id="log_attack"></div>
+    <div id="log_attack">"MY ATTACKS 0 OPPONENT ATTACKS 0</div>
 
     <table id="players" class="table table-striped">
         <thead>
