@@ -16,7 +16,7 @@ app.config['SECRET_KEY'] = APP_SECRET_KEY
 app.config['MONGO_URI'] = MONGO_URI
 
 mongo = PyMongo(app)
-
+mongo_db = mongo.db.MyCollection 
 PLAYERS = ["p1", "p2"]
 
 
@@ -27,13 +27,13 @@ def ping_server():
 
 @app.route('/get_one')
 def get_one():
-    one = mongo.db.test_tb.find_one()
+    # one = mongo_db.find_one()
 
     return jsonify({"one": not not one})
 
 @app.route('/get_all')
 def get_all():
-    all = mongo.db.test_tb.find()
+    all = mongo_db.find()
     all_list = list(all)
     json_data = dumps(all_list)
 
@@ -42,8 +42,9 @@ def get_all():
 
 @app.route('/put_one')
 def put_one():
-    mongo.db.test_tb.insert_one({
-        "username": "testowy_" + random.choice(string.ascii_letters),
+    mongo_db.insert_one({
+        "player_id": 1,
+        "username": "testowy_1" + random.choice(string.ascii_letters),
         "password": bcrypt.hashpw("testowe".encode(DEC_FORMAT), bcrypt.gensalt()),
     })
 
@@ -51,7 +52,7 @@ def put_one():
 
 @app.route('/drop_all')
 def drop():
-    mongo.db.test_tb.drop()
+    mongo_db.drop()
     return redirect(url_for('get_all'))
 
 
@@ -62,7 +63,7 @@ def login():
         flash("Login requested for user {}".format(form.username.data))
         username = form.username.data
         password = form.password.data
-        user = mongo.db.test_tb.find_one({'username': form.username.data})
+        user = mongo_db.find_one({'username': form.username.data})
 
         # TODO hashed password etc.
         if user is not None and login_valid(username, password, user):
@@ -85,7 +86,7 @@ def register():
 
         username = form.username.data
         password = form.password.data
-        user = mongo.db.test_tb.find_one({'username': form.username.data})
+        user = mongo_db.find_one({'username': form.username.data})
 
         # TODO hashed password etc.
         if user is not None:
@@ -93,7 +94,7 @@ def register():
             return redirect(url_for('register'))
         else:
             flash("Registered.")
-            mongo.db.test_tb.insert_one({
+            mongo_db.insert_one({
                 "username": username,
                 "password": bcrypt.hashpw(password.encode(DEC_FORMAT), bcrypt.gensalt()),
             })
@@ -151,7 +152,7 @@ def play_game():
 
 @app.route('/users')
 def get_users():
-    users_raw = mongo.db.test_tb.find()
+    users_raw = mongo_db.find()
 
     if not users_raw:
         return "Database error"

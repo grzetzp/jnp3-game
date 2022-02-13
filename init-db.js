@@ -1,8 +1,8 @@
-db = db.getSiblingDB('test_mongodb');
+db = db.getSiblingDB('mongodb_sharded');
 
-db.test_tb.drop();
+db.mongodb_sharded.drop();
 
-db.test_tb.insertMany([
+db.mongodb_sharded.insertMany([
     {
         "id": 1,
         "name": "asd"

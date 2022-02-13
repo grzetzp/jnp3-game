@@ -1,7 +1,9 @@
 import os
 # from base64 import b64encode
 
-MONGO_URI = 'mongodb://test_mongodb:27017/test_mongodb'
+MONGO_URI = 'mongodb://MyDatabase:27117/MyDatabase'
+# MONGO_URI = 'mongodb://MyDatabase:27117/MyDatabase'
+# MONGO_URI = 'mongodb://MyDatabase:27017/MyDatabase'
 APP_SALT = os.urandom(32)
 ENC_ALGO = 'HS256'
 DEC_FORMAT = 'utf-8'
