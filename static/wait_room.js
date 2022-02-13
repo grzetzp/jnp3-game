@@ -1,8 +1,5 @@
 var socket = io()
 var log = document.getElementById('log')
-var leaveForm = document.getElementById('leave')
-
-leaveForm.addEventListener('submit', emitAction)
 
 var room = getRandomHash();
 var rating_range = 10;
