@@ -65,25 +65,25 @@ def on_join():
 @socketio.on('win')
 def on_join():
     my_rating = mongo.db.rating.find_one({'username': session['username']})['rating']
-    mongo.db.rooms.delete_one({"username": session['username'], 'rating': my_rating})
+    mongo.db.rating.delete_one({"username": session['username'], 'rating': my_rating})
     my_rating += 10
-    mongo.db.rooms.insert_one({"username": session['username'], 'rating': my_rating})
+    mongo.db.rating.insert_one({"username": session['username'], 'rating': my_rating})
 
 
 @socketio.on('lose')
 def on_join():
     my_rating = mongo.db.rating.find_one({'username': session['username']})['rating']
-    mongo.db.rooms.delete_one({"username": session['username'], 'rating': my_rating})
+    mongo.db.rating.delete_one({"username": session['username'], 'rating': my_rating})
     my_rating -= 10
-    mongo.db.rooms.insert_one({"username": session['username'], 'rating': my_rating})
+    mongo.db.rating.insert_one({"username": session['username'], 'rating': my_rating})
 
 
 @socketio.on('tie')
 def on_join():
     my_rating = mongo.db.rating.find_one({'username': session['username']})['rating']
-    mongo.db.rooms.delete_one({"username": session['username'], 'rating': my_rating})
+    mongo.db.rating.delete_one({"username": session['username'], 'rating': my_rating})
     my_rating += 1
-    mongo.db.rooms.insert_one({"username": session['username'], 'rating': my_rating})
+    mongo.db.rating.insert_one({"username": session['username'], 'rating': my_rating})
 
 
 attack_success_chance = 0.5

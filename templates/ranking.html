@@ -1,0 +1,15 @@
+{% extends 'layout.html' %}
+
+
+{% block content %}
+
+    <h1>Ranking</h1>
+    {% if rating %}
+    {% for rank in rating %}
+        <h1>
+        {{ rank }}
+        </h1>
+    {% endfor %}
+    {% endif %}
+
+{% endblock %}

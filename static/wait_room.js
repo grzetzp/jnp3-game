@@ -9,10 +9,17 @@ var rating_range = 10;
 
 
 (function(){
-    log.innerHTML += "<p> Checking for games in rating range" + rating_range  + "</p>"
+    log.innerHTML += "<p> Checking for games in rating range of " + rating_range  + "...</p>"
     socket.emit('check_now', {'range': rating_range, 'room_log': log.innerHTML});
     rating_range += 10;
     setTimeout(arguments.callee, 10000);
+})();
+
+(function () {
+    console.log("I\'m connected! room nr", room);
+    document.getElementById("roomID").innerHTML = room;
+
+    socket.emit('join', {'room': room})
 })();
 
 
@@ -34,13 +41,6 @@ function getRandomHash() {
    }
    return result;
 }
-
-socket.on('connect', function () {
-    console.log("I\'m connected! room nr", room);
-    document.getElementById("roomID").innerHTML = room;
-
-    socket.emit('join', {'room': room});
-})
 
 socket.on('found', async function (data) {
     console.log("found");

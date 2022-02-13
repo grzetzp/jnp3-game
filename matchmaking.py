@@ -43,9 +43,11 @@ def on_join(data):
     print("PLAYER", username, "JOINED ROOM", my_room)
     join_room(my_room)
 
+    rating = mongo.db.rating.find_one({'username': username})['rating']
+
     mongo.db.rooms.insert_one({
         "id": my_room,
-        "rating": 500,
+        "rating": rating,
         "player": username
     })
 
@@ -77,8 +79,12 @@ def on_leave(data):
 def on_leave(data):
     rooms_raw = mongo.db.rooms.find()
     search_radius = data['range']
+    print("PRINTING ULTRA OEMGA")
+    for doc in mongo.db.rooms.find():
+        print(doc)
 
     for rooms in rooms_raw:
+        print("SINGLE ROOM ", rooms)
         rid = rooms['id']
         rating = rooms['rating']
         player = rooms['player']

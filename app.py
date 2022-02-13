@@ -25,6 +25,14 @@ def ping_server():
     return "Server response." + str(app.config['SECRET_KEY']) + " " + app.config['MONGO_URI'] + "\n"
 
 
+@app.route('/delete_all')
+def delete_all():
+    mongo.db.test_tb.drop()
+    mongo.db.rating.drop()
+    mongo.db.rooms.drop()
+    return jsonify({"dropped": True})
+
+
 @app.route('/get_one')
 def get_one():
     one = mongo.db.test_tb.find_one()
@@ -97,6 +105,7 @@ def register():
                 "username": username,
                 "password": bcrypt.hashpw(password.encode(DEC_FORMAT), bcrypt.gensalt()),
             })
+            mongo.db.rating.insert_one({'username': username, 'rating': 500})
             session['username'] = username
             return redirect(url_for('index', username=username))
     return render_template('register.html', form=form)
@@ -158,6 +167,15 @@ def get_users():
 
     users = [{"id": user['id'], "username": user['username']} for user in users_raw]
     return jsonify({"all_users": users})
+
+
+@app.route('/ranking')
+def get_rating():
+    print("REQUEST")
+    rating_raw = mongo.db.rating.find()
+    rating = [str(rtg['username']) + " " + str(rtg['rating']) for rtg in rating_raw]
+    print("PRINTING", rating)
+    return render_template('ranking.html', rating=rating)
 
 
 if __name__ == '__main__':
