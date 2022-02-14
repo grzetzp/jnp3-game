@@ -17,10 +17,6 @@ body {
     background-color: #90ee90 !important;
 }
 
-.screenshots {
-    column-count: 1;
-}
-
 @media (min-width:768px) { .screenshots { column-count: 2; } }
 
 

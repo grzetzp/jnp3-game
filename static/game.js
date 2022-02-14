@@ -15,10 +15,7 @@ var op_attck_nr = 0
 var my_name = getCookie("username")
 var my_attck_scs = 0.5
 var op_attck_scs = 0.5
-// var log = document.getElementById('log')
 
-// var emitData = new FormData(document.getElementById('emit_data'))
-//
 var ranking_counted = false
 
 function startTimer(duration, display) {
