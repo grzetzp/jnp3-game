@@ -23,14 +23,6 @@
     <h2>Enemy attack success chance:</h2>
     <div id="op_success">0.5</div>
 
-    <form action="/back">
-        <input type="submit" value="Back" class="btn btn-default rounded border" class="btn btn-default rounded border">
-    </form>
-    
-    <form id="leave" action="/game/leave">
-        <input type="submit" value="Leave" class="btn btn-default rounded border">
-    </form>
-
     <h2>Attack response:</h2>
     <div id="log_attack">"MY ATTACKS 0 OPPONENT ATTACKS 0</div>
 
@@ -55,6 +47,14 @@
 
     <h2>Echo response:</h2>
     <div id="log_echo"></div>
+
+    <form action="/back">
+        <input type="submit" value="Back" class="btn btn-default rounded border" class="btn btn-default rounded border">
+    </form>
+
+    <form id="leave" action="/game/leave">
+        <input type="submit" value="Leave" class="btn btn-default rounded border">
+    </form>
 
     <script src="{{url_for('static', filename='game.js')}}"></script>
 {% endblock %}
