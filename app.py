@@ -10,8 +10,9 @@ import jwt
 import bcrypt
 import random
 import string
-
 app = Flask(__name__)
+
+
 app.config['SECRET_KEY'] = APP_SECRET_KEY
 app.config['MONGO_URI'] = MONGO_URI
 

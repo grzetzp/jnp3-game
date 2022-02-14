@@ -17,7 +17,6 @@ mongo = PyMongo(app)
 socketio = SocketIO(app, manage_session=False)
 
 my_room = ""
-my_rating = 500
 
 
 @app.route('/', methods=['POST', 'GET'])
@@ -27,7 +26,7 @@ def index():
         session['username'] = username
         print(username)
         global my_rating
-        #my_rating = mongo.db.rating.find_one({'username': username})['rating']
+        my_rating = mongo.db.rating.find_one({'username': username})['rating']
 
         return render_template('wait_room.html', username=session['username'], room_log='')
 
