@@ -3,7 +3,7 @@ from flask import Flask, jsonify, render_template, request, session, redirect
 from flask_pymongo import PyMongo
 from flask_socketio import SocketIO, emit, send
 from flask_socketio import join_room, leave_room
-from game import attack, attack_success
+from game import attack_success
 from config import APP_SECRET_KEY, MONGO_URI
 
 # MONGO_URI = 'mongodb://test_mongodb:27017/test_mongodb'
@@ -17,7 +17,6 @@ mongo = PyMongo(app)
 socketio = SocketIO(app, manage_session=False)
 
 my_room = ""
-my_rating = 500
 
 
 @app.route('/', methods=['POST', 'GET'])
@@ -27,7 +26,7 @@ def index():
         session['username'] = username
         print(username)
         global my_rating
-        #my_rating = mongo.db.rating.find_one({'username': username})['rating']
+        my_rating = mongo.db.rating.find_one({'username': username})['rating']
 
         return render_template('wait_room.html', username=session['username'], room_log='')
 
@@ -49,9 +48,11 @@ def on_join(data):
     print("PLAYER", username, "JOINED ROOM", my_room)
     join_room(my_room)
 
+    rating = mongo.db.rating.find_one({'username': username})['rating']
+
     mongo.db.rooms.insert_one({
         "id": my_room,
-        "rating": 500,
+        "rating": rating,
         "player": username
     })
 
@@ -83,8 +84,12 @@ def on_leave(data):
 def on_leave(data):
     rooms_raw = mongo.db.rooms.find()
     search_radius = data['range']
+    print("PRINTING ULTRA OEMGA")
+    for doc in mongo.db.rooms.find():
+        print(doc)
 
     for rooms in rooms_raw:
+        print("SINGLE ROOM ", rooms)
         rid = rooms['id']
         rating = rooms['rating']
         player = rooms['player']

@@ -1,8 +1,11 @@
-version: "3"
+version: "3.5"
 services:
   app:
     build: .
     command: python -u app.py
+    container_name: app
+    expose:
+      - 5000
     ports:
       - "5000:5000"
     volumes:
@@ -13,9 +16,31 @@ services:
       - mongodb
     env_file:
       - .env
+    environment:
+      - HOST=app1
+  appreplica:
+    build: .
+    command: python -u app.py
+    container_name: appreplica
+    expose:
+      - 5000
+    ports:
+      - "5005:5000"
+    volumes:
+      - .:/app
+    links:
+      - mongodb
+    depends_on:
+      - mongodb
+    env_file:
+      - .env
+    environment:
+      - HOST=app2
   matchmaking:
     build: .
     command: python -u matchmaking.py
+    expose:
+      - 5002
     ports:
       - "5002:5002"
     volumes:
@@ -37,9 +62,22 @@ services:
       - ./init-db.js:/docker-entrypoint-initdb.d/init-db.js:ro
     ports:
       - 27017:27017
+  varnish:
+    image: varnish:latest
+    volumes:
+      - ./varnish/default.vcl:/etc/varnish/default.vcl
+    expose:
+      - 80
+    ports:
+      - "8080:80"
+    depends_on:
+      - "app"
+      - "appreplica"
   game:
     build: .
     command: python -u game_app.py
+    expose:
+      - 5001
     ports:
       - "5001:5001"
     volumes:

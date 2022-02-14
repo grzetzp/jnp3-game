@@ -2,7 +2,7 @@ import os
 from flask import Flask, jsonify, render_template, request, session, redirect
 from flask_pymongo import PyMongo
 from flask_socketio import SocketIO, emit, join_room
-from game import attack, attack_success
+from game import attack_success
 from config import APP_SECRET_KEY, MONGO_URI, ENC_ALGO, DEC_FORMAT
 from login import log_out
 import jwt
@@ -23,7 +23,7 @@ my_room = ""
 @app.route('/', methods=['POST', 'GET'])
 def index():
     print("key: " + APP_SECRET_KEY)
-    
+
     if request.cookies.get('token'):
         token = request.cookies.get('token')
         payload = jwt.decode(token, APP_SECRET_KEY, ENC_ALGO)
@@ -47,19 +47,44 @@ def go_back():
     return resp
 
 
-@app.route('/game/leave')
-def leave_game():
-    resp = redirect('http://localhost:5000/logout')
-
-    if 'username' in session:
-        print(session['username'] + " leaving")
-        log_out(resp, session)
-    return resp
-
-
 @socketio.on('join_game')
 def on_join():
     join_room(my_room)
+
+
+@socketio.on('win')
+def on_join():
+    my_rating = mongo.db.rating.find_one({'username': session['username']})['rating']
+    mongo.db.rating.delete_one({"username": session['username'], 'rating': my_rating})
+    my_rating += 10
+    mongo.db.rating.insert_one({"username": session['username'], 'rating': my_rating})
+
+
+@socketio.on('lose')
+def on_join():
+    my_rating = mongo.db.rating.find_one({'username': session['username']})['rating']
+    mongo.db.rating.delete_one({"username": session['username'], 'rating': my_rating})
+    my_rating -= 10
+    mongo.db.rating.insert_one({"username": session['username'], 'rating': my_rating})
+
+
+@socketio.on('tie')
+def on_join():
+    my_rating = mongo.db.rating.find_one({'username': session['username']})['rating']
+    mongo.db.rating.delete_one({"username": session['username'], 'rating': my_rating})
+    my_rating += 1
+    mongo.db.rating.insert_one({"username": session['username'], 'rating': my_rating})
+
+
+attack_success_chance = 0.5
+
+
+@socketio.on('train')
+def on_attack():
+    global attack_success_chance
+    attack_success_chance += 0.01
+    attack_success_chance = min(attack_success_chance, 1)
+    emit('train_response', {'data': attack_success_chance, 'player': session['username']}, to=my_room)
 
 
 @socketio.on('attack')
@@ -68,7 +93,7 @@ def on_attack():
     print(my_room)
     if 'username' in session:
         print(session['username'] + " attacked")
-    emit('attack_response', {'data': attack_success(attack())}, to=my_room)
+    emit('attack_response', {'data': attack_success(attack_success_chance), 'player': session['username']}, to=my_room)
 
 
 @socketio.on('my_event')
@@ -91,16 +116,15 @@ def on_disconnect():
 
     if 'username' in session:
         print("client session {} disconnected".format(session['username']))
-    # print("client {} disconnected".format(players[request.sid]))
 
+@app.route('/game/leave', methods=['POST', 'GET'])
+def on_leave():
+    username = session['username']
 
-# @socketio.on('testtest')
-# def aaa():
-#     resp = redirect('http://localhost:5001/', code=307)
-#     resp.set_cookie('username', session['username'])
-#
-#     return resp
-
+    if 'username' in session:
+        print(session['username'] + " leaving")
+        session.clear()
+    return redirect('http://localhost:5000/logout')
 
 if __name__ == '__main__':
     # app.run(host="0.0.0.0", port=5000)

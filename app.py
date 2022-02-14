@@ -2,7 +2,7 @@ import os
 from flask import Flask, jsonify, render_template, request, session, redirect, url_for, flash
 from flask_pymongo import PyMongo
 from flask_socketio import SocketIO, emit
-from game import attack, attack_success
+from game import attack_success
 from config import APP_SECRET_KEY, MONGO_URI, ENC_ALGO, DEC_FORMAT
 from login import LoginForm, RegisterForm, login_valid, log_out
 from bson.json_util import dumps
@@ -10,8 +10,9 @@ import jwt
 import bcrypt
 import random
 import string
-
 app = Flask(__name__)
+
+
 app.config['SECRET_KEY'] = APP_SECRET_KEY
 app.config['MONGO_URI'] = MONGO_URI
 
@@ -23,6 +24,14 @@ PLAYERS = ["p1", "p2"]
 @app.route('/ping')
 def ping_server():
     return "Server response." + str(app.config['SECRET_KEY']) + " " + app.config['MONGO_URI'] + "\n"
+
+
+@app.route('/delete_all')
+def delete_all():
+    mongo.db.test_tb.drop()
+    mongo.db.rating.drop()
+    mongo.db.rooms.drop()
+    return jsonify({"dropped": True})
 
 
 @app.route('/get_one')
@@ -97,6 +106,7 @@ def register():
                 "username": username,
                 "password": bcrypt.hashpw(password.encode(DEC_FORMAT), bcrypt.gensalt()),
             })
+            mongo.db.rating.insert_one({'username': username, 'rating': 500})
             session['username'] = username
             return redirect(url_for('index', username=username))
     return render_template('register.html', form=form)
@@ -158,6 +168,13 @@ def get_users():
 
     users = [{"id": user['id'], "username": user['username']} for user in users_raw]
     return jsonify({"all_users": users})
+
+
+@app.route('/ranking', methods=['POST', 'GET'])
+def get_rating():
+    rating_raw = mongo.db.rating.find()
+    rating = [str(rtg['username']) + " " + str(rtg['rating']) for rtg in rating_raw]
+    return render_template('ranking.html', rating=rating)
 
 
 if __name__ == '__main__':

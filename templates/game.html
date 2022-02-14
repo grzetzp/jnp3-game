@@ -3,10 +3,18 @@
 {% block content %}
     <h1>Game</h1>
 
+    <marquee direction="left" id="timeout" direction="right"></marquee>
+
+    <h1 id="time"></h1>
+
     <h2>Player: {{ username }}</h2>
     <form id="attack" method="post" action="#">
 {#        <label for="emit_data"></label><input type="text" name="emit_data" id="emit_data" placeholder="Message to emit">#}
         <input type="submit" value="Attack" class="btn btn-default rounded border">
+    </form>
+    <form id="train" method="post" action="#">
+{#        <label for="emit_data"></label><input type="text" name="emit_data" id="emit_data" placeholder="Message to emit">#}
+        <input type="submit" value="Train" class="btn btn-default rounded border">
     </form>
 
     <form action="/back">
@@ -16,9 +24,14 @@
     <form id="leave" action="/game/leave">
         <input type="submit" value="Leave" class="btn btn-default rounded border">
     </form>
+    <h2>Attack success chance:</h2>
+    <div id="my_success">0.5</div>
+
+    <h2>Enemy attack success chance:</h2>
+    <div id="op_success">0.5</div>
 
     <h2>Attack response:</h2>
-    <div id="log_attack"></div>
+    <div id="log_attack">"MY ATTACKS 0 OPPONENT ATTACKS 0</div>
 
     <table id="players" class="table table-striped">
         <thead>
