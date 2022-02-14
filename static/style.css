@@ -1,0 +1,52 @@
+body {
+    line-height: 1.7em;
+    color: black;
+    font-size: 13px;
+    background-color: #4287f5 
+}
+
+.navbar-production {
+    background-color: #ffcccb !important;
+}
+
+.navbar-staging {
+    background-color: #90ee90 !important;
+}
+
+.screenshots {
+    column-count: 1;
+}
+
+@media (min-width:768px) { .screenshots { column-count: 2; } }
+
+
+.table.table-ellipsis {
+    table-layout: fixed;
+}
+
+.table.table-ellipsis tbody td {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap
+}
+
+.table.table-ellipsis tbody td:hover {
+    text-overflow: clip;
+    white-space: normal;
+    word-break: break-all;
+}
+
+table.table-fit {
+    width: auto !important;
+    table-layout: auto !important;
+}
+table.table-fit thead th, table.table-fit tfoot th {
+    width: auto !important;
+}
+table.table-fit tbody td, table.table-fit tfoot td {
+    width: auto !important;
+}
+
+.form-margin {
+    margin-top: 1em;
+}

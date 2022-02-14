@@ -20,7 +20,8 @@ function emitAction(event) {
     event.preventDefault();
     console.log("Leave")
     socket.emit('leave', {'room': room});
-    return false
+    // return false
+    window.location.replace("http://localhost:5000/");
 }
 
 function getRandomHash() {

@@ -33,7 +33,13 @@ def index():
 
     return redirect('http://localhost:5000/')
 
+@app.route('/back', methods=['POST', 'GET'])
+def go_back():
+    resp = redirect('http://localhost:5000/')
+    if 'username' in session:
+        resp.set_cookie('username', session['username'])
 
+    return resp
 
 @socketio.on('join')
 def on_join(data):
