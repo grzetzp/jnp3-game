@@ -16,14 +16,6 @@
 {#        <label for="emit_data"></label><input type="text" name="emit_data" id="emit_data" placeholder="Message to emit">#}
         <input type="submit" value="Train" class="btn btn-default rounded border">
     </form>
-
-    <form action="/back">
-        <input type="submit" value="Back" class="btn btn-default rounded border" class="btn btn-default rounded border">
-    </form>
-
-    <form id="leave" action="/game/leave">
-        <input type="submit" value="Leave" class="btn btn-default rounded border">
-    </form>
     <h2>Attack success chance:</h2>
     <div id="my_success">0.5</div>
 
@@ -54,6 +46,14 @@
 
     <h2>Echo response:</h2>
     <div id="log_echo"></div>
+
+    <form action="/back">
+        <input type="submit" value="Back" class="btn btn-default rounded border" class="btn btn-default rounded border">
+    </form>
+
+    <form id="leave" action="/game/leave">
+        <input type="submit" value="Leave" class="btn btn-default rounded border">
+    </form>
 
     <script src="{{url_for('static', filename='game.js')}}"></script>
 {% endblock %}

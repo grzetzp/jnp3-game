@@ -5,6 +5,10 @@ body {
     background-color: #4287f5 
 }
 
+.btn {
+    background-color:  orange;
+}
+
 .navbar-production {
     background-color: #ffcccb !important;
 }
