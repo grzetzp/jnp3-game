@@ -115,6 +115,14 @@ def on_disconnect():
     if 'username' in session:
         print("client session {} disconnected".format(session['username']))
 
+@app.route('/game/leave', methods=['POST', 'GET'])
+def on_leave():
+    username = session['username']
+
+    if 'username' in session:
+        print(session['username'] + " leaving")
+        session.clear()
+    return redirect('http://localhost:5000/logout')
 
 if __name__ == '__main__':
     socketio.run(app, host="0.0.0.0", port=5001)

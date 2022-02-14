@@ -170,7 +170,7 @@ def get_users():
     return jsonify({"all_users": users})
 
 
-@app.route('/ranking')
+@app.route('/ranking', methods=['POST', 'GET'])
 def get_rating():
     rating_raw = mongo.db.rating.find()
     rating = [str(rtg['username']) + " " + str(rtg['rating']) for rtg in rating_raw]
