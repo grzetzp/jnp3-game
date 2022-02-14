@@ -2,7 +2,7 @@
 
 {% block content %}
     <h1>Login</h1>
-    <form action="" method="post" novalidate>
+    <form action="" method="post" novalidate class="btn btn-default rounded border">
         {{ form.hidden_tag() }}
         <p>
             {{ form.username.label }}<br>
@@ -18,7 +18,8 @@
     </form>
     <p>New User?<br> 
         <form action="/register" method="post">
-            <input type="submit" value="Register">
+            <input type="submit" value="Register" class="btn btn-default rounded border">
         </form>
     </p>
+    <a href="/" class="btn btn-default rounded border">Back</a>
 {% endblock %}

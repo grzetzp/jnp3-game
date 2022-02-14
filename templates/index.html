@@ -1,14 +1,14 @@
 {% extends 'layout.html' %}
 
 {% block content %}
-    <h1>Title</h1>
+    <h1>Click rush</h1>
     {% if username is defined %}
         <h3>Hello {{ username }}</h3>
         <form action="/game" method="post" id="join_game">
-            <input type="submit" value="Start game!">
+            <input type="submit" value="Start game!" class="btn btn-default rounded border">
         </form>
         <form action="/logout" method="post">
-            <input type="submit" value="Logout">
+            <input type="submit" value="Logout" class="btn btn-default rounded border">
         </form>
     {% else %}
         <h3>Log in and play</h3><!-- 
@@ -17,11 +17,11 @@
             <input type="submit" value="Start game!">
         </form> -->
         <form action="/login" method="post">
-            <input type="submit" value="Login">
+            <input type="submit" value="Login"  class="btn btn-default rounded border">
         </form>
     <p>New User?<br> 
         <form action="/register" method="post">
-            <input type="submit" value="Register">
+            <input type="submit" value="Register" class="btn btn-default rounded border">
         </form>
     </p>
     {% endif %}

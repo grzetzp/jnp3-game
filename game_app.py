@@ -38,7 +38,7 @@ def index():
     return redirect('http://localhost:5000/')
 
 
-@app.route('/back')
+@app.route('/back', methods=['POST', 'GET'])
 def go_back():
     resp = redirect('http://localhost:5000/')
     if 'username' in session:
