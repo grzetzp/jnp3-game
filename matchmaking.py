@@ -6,8 +6,6 @@ from flask_socketio import join_room, leave_room
 from game import attack_success
 from config import APP_SECRET_KEY, MONGO_URI
 
-# MONGO_URI = 'mongodb://test_mongodb:27017/test_mongodb'
-# MONGO_HOSTNAME = os.environ[]
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = APP_SECRET_KEY

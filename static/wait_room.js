@@ -42,10 +42,6 @@ function getRandomHash() {
 
 socket.on('found', async function (data) {
     console.log("found");
-    // var prevcookie = document.cookie
-    // console.log(prevcookie);
-    // prevcookie = prevcookie + ";
-    // console.log(prevcookie);
     document.cookie = "room=" + data['room'];
     console.log(document.cookie);
     window.location.replace("http://localhost:5001/");

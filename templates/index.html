@@ -11,11 +11,7 @@
             <input type="submit" value="Logout" class="btn btn-default rounded border">
         </form>
     {% else %}
-        <h3>Log in and play</h3><!-- 
-        <form action="/game" method="post" id="join_game">
-            <label for="username"></label><input type="text" name="username" id="username" placeholder="Username" value="{{ request.form['username'] }}">
-            <input type="submit" value="Start game!">
-        </form> -->
+        <h3>Log in and play</h3>
         <form action="/login" method="post">
             <input type="submit" value="Login"  class="btn btn-default rounded border">
         </form>
